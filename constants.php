@@ -1,0 +1,3 @@
+<?php
+
+defined('API_TOKEN_TIMESTAMP_SPAN') OR define('API_TOKEN_TIMESTAMP_SPAN', 60);	

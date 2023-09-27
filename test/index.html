@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>SetRep API Test</title>
+		<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+	</head>
+
+	<body>
+
+		<div class="container mt-5">
+
+			<form id="main_frm" action="../index.php" method="post" target="_blank">
+				<div class="form-group">
+					<label for="user_key">User Key*</label>
+					<input type="text" class="form-control" id="user_key" name="user_key" required>
+				</div>
+				<div class="form-group">
+					<label for="user_token">User Token*</label>
+					<input type="text" class="form-control" id="user_token" name="user_token" required>
+				</div>
+				<div class="form-group">
+					<label for="appcode">App Code*</label>
+					<input type="text" class="form-control" id="appcode" name="app" required>
+				</div>
+				<div class="form-group">
+					<label for="sectcode">Section Code</label>
+					<input type="text" class="form-control" id="sectcode" name="sectcode">
+				</div>
+				<div class="form-group">
+					<label for="keycode">Key Code</label>
+					<input type="text" class="form-control" id="keycode" name="keycode">
+				</div>
+				<div class="form-group">
+					<label for="value">Value</label>
+					<textarea class="form-control" id="value" name="value" ></textarea>
+				</div>
+
+				<input type="hidden" class="form-control" id="token" name="token">
+				
+				<label><big><b>*</b></big><i> Required field.</i></label>
+				
+			</form>
+
+			<div>
+				<button onclick="sendData()" class="btn btn-primary">Send</button>
+			</div>
+
+		</div>
+
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+		<script>
+
+			function getSHA256Hash(data) {
+
+				return CryptoJS.SHA256(data).toString();
+
+			}
+
+			function getToken(key, token, timeStamp = null) {
+				
+				if (!timeStamp) {
+					timeStamp = Math.floor(Date.now() / 1000); // Ottiene il timestamp corrente in secondi
+				}
+
+				if (timeStamp % 2 === 0) {
+					token = token + timeStamp + token;
+				} else {
+					token = timeStamp + token;
+				}
+
+				token = getSHA256Hash(token);
+
+				return `${timeStamp}_${key}_${token}`;
+
+			}
+
+			function sendData() {
+
+				let mainForm = document.getElementById("main_frm");
+				let userKey = document.getElementById("user_key");
+				let userToken = document.getElementById("user_token");
+				let token = document.getElementById("token");
+				token.value = getToken(userKey.value, userToken.value);
+				console.log(token.value);
+				mainForm.submit();
+
+			}
+
+		</script>
+
+	</body>
+
+</html>
