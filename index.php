@@ -30,7 +30,7 @@ try {
         $conn = new mysqli($db_host, $db_user, $db_password, $db_name);
         if ($conn->connect_error) {
             throw new Exception("Connection to database failed: " . $conn->connect_error);
-        }    
+        }   
     }
     
     $user_id = (int)chk_api_token($call_data['token']);
@@ -76,6 +76,7 @@ try {
                         ORDER BY 
                             setting_code ASC
                     ";
+            $conn->set_charset("utf8mb4");
             $queryres = $conn->query($sql);
             $data = [];
             if ($queryres) {
@@ -97,7 +98,7 @@ try {
                 $req_ok = true;
                 $setting_value = $call_data['value'];
                 if ($setting_value) {
-                    $setting_value = "'" . normalize_sql_str(trim($setting_value), $conn) . "'";
+                    $setting_value = "'" . normalize_sql_str($setting_value, $conn) . "'";
                 } else {
                     $setting_value = 'NULL';
                 }
@@ -134,6 +135,7 @@ try {
                                     ON DUPLICATE KEY UPDATE 
                                         setting_value = $setting_value
                                 ";
+                        $conn->set_charset("utf8mb4");
                         if (!$conn->query($sql)) {
                             throw new Exception($conn->error);
                         }
@@ -164,6 +166,7 @@ try {
                                 AND (setting_code = $setting_code) 
                                 AND (ISNULL(id_user) OR (id_user = $user_id)) 
                         ";
+                $conn->set_charset("utf8mb4");
                 $queryres = $conn->query($sql);
                 $output['data'] = null;
                 if ($queryres) {
@@ -196,7 +199,7 @@ GET SECTIONS LIST
         if ($queryres) {
             foreach ($queryres as $value) {
                 $item = [];
-                $item['name'] = $value['section_name'];
+                $item['name'] = utf8_encode($value['section_name']);
                 $item['code'] = $value['section_code'];
                 $data[] = $item;
             }
@@ -215,7 +218,7 @@ if ($err) {
     $output['err'] = $err;
 }
 
-header('Content-Type: application/json');
-echo json_encode($output);
+header('Content-Type: application/json; charset=utf-8');
+echo json_encode($output, JSON_UNESCAPED_UNICODE);
 
 ?>
