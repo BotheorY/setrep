@@ -102,6 +102,6 @@ function chk_api_token($api_token) {
 
 function normalize_sql_str($value, $db): string {
 
-    return mysqli_real_escape_string($db, stripslashes($value));
+    return mysqli_real_escape_string($db, $value);
 
 }
